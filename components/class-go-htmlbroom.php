@@ -11,16 +11,10 @@ class GO_Htmlbroom
 	}// end __construct
 
 	/**
-	 * Removes 'div' and 'span' tags entirely, queues up 'style' stripping
+	 * Queues up 'style' stripping
 	 */
 	public function admin_init()
 	{
-		global $allowedposttags;
-
-		//Remove blacklisted tags from allowed list
-		unset( $allowedposttags['div'] );
-		unset( $allowedposttags['span'] );
-
 		//Adds the functions to the correct hooks
 		add_filter( 'content_save_pre', $this->strip_attribs() );
 	}//end admin_init
@@ -30,6 +24,12 @@ class GO_Htmlbroom
 	 */
 	public function strip_attribs()
 	{
+		global $allowedposttags;
+
+		//Remove blacklisted tags from allowed list
+		unset( $allowedposttags['div'] );
+		unset( $allowedposttags['span'] );
+
 		//Collects post data OUTSIDE of the loop
 		$posts = get_posts();
 		$id = $posts[0]->ID;
