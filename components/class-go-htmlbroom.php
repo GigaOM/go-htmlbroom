@@ -1,0 +1,80 @@
+<?php
+
+class GO_Htmlbroom
+{
+	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		add_action( 'init', array( $this, 'test_sanitize' ) );
+	}// end __construct
+
+	/**
+	 * Removes 'div' and 'span' tags entirely, queues up 'style' stripping
+	 */
+	public function test_sanitize()
+	{
+		global $allowedposttags;
+
+		//Remove blacklisted tags from allowed list
+		unset( $allowedposttags['div'] );
+		unset( $allowedposttags['span'] );
+
+		//Adds the functions to the correct hooks
+		add_filter( 'content_save_pre', 'wp_filter_post_kses' );
+		add_filter( 'content_save_pre', $this->strip_attribs() );
+	}//end test_sanitize
+
+	/**
+	 * Strips ONLY 'style' attributes WITHIN tags
+	 */
+	public function strip_attribs()
+	{
+		//Collects post data OUTSIDE of the loop
+		$posts = get_posts();
+		$id = $posts[0]->ID;
+		$content = get_post_field( 'post_content', $id, 'attribute' );
+		$pattern = '/( style=&quot.[a-z0-9:;, \-]+&quot.)/i';
+
+		//On pattern match within post content
+		if ( preg_match_all( $pattern, $content, $matches ) )
+		{
+			$limit = count( $matches[0] );
+			$result = $content;
+
+			//Loops through matches found in post content
+			for ( $i = 0; $i < $limit; $i++ )
+			{
+				//Replaces matches with '' or blank space
+				$result = str_replace( $matches[ 0 ][ $i ], '', $result );
+			}//end for
+
+			//Converting HTMLEntities back
+			$result = str_replace( '&lt;', '<', $result );
+			$result = str_replace( '&gt;', '>', $result );
+
+			//Updating post content
+			$my_post = array(
+				'ID' => $id,
+				'post_content' => $result,
+			);
+			wp_update_post( $my_post );
+		}//end if
+	}//end strip_attribs
+}// end class
+
+/**
+ * Singleton
+ */
+function go_htmlbroom()
+{
+	global $go_htmlbroom;
+
+	if ( ! isset( $go_htmlbroom ) )
+	{
+		$go_htmlbroom = new GO_Htmlbroom();
+	}//END if
+
+	return $go_htmlbroom;
+}//end go_htmlbroom
