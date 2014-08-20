@@ -7,13 +7,13 @@ class GO_Htmlbroom
 	 */
 	public function __construct()
 	{
-		add_action( 'init', array( $this, 'test_sanitize' ) );
+		add_action( 'init', array( $this, 'admin_init' ) );
 	}// end __construct
 
 	/**
 	 * Removes 'div' and 'span' tags entirely, queues up 'style' stripping
 	 */
-	public function test_sanitize()
+	public function admin_init()
 	{
 		global $allowedposttags;
 
@@ -22,9 +22,8 @@ class GO_Htmlbroom
 		unset( $allowedposttags['span'] );
 
 		//Adds the functions to the correct hooks
-		add_filter( 'content_save_pre', 'wp_filter_post_kses' );
 		add_filter( 'content_save_pre', $this->strip_attribs() );
-	}//end test_sanitize
+	}//end admin_init
 
 	/**
 	 * Strips ONLY 'style' attributes WITHIN tags
