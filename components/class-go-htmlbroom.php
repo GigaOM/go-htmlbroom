@@ -15,27 +15,23 @@ class GO_Htmlbroom
 	 */
 	public function admin_init()
 	{
-		//Adds the functions to the correct hooks
-		add_filter( 'content_save_pre', $this->strip_attribs() );
-	}//end admin_init
-
-	/**
-	 * Strips ONLY 'style' attributes WITHIN tags
-	 */
-	public function strip_attribs()
-	{
 		global $allowedposttags;
 
 		//Remove blacklisted tags from allowed list
 		unset( $allowedposttags['div'] );
 		unset( $allowedposttags['span'] );
+		add_filter( 'content_save_pre', 'wp_kses_post' );
 
-		//Collects post data OUTSIDE of the loop
-		$posts = get_posts();
-		$id = $posts[0]->ID;
-		$content = get_post_field( 'post_content', $id, 'attribute' );
-		$pattern = '/( style=&quot.[a-z0-9:;, \-]+&quot.)/i';
+		//Adds the functions to the correct hooks
+		add_filter( 'content_edit_pre', array( $this, 'content_edit_pre' ), 10, 2 );
+	}//end admin_init
 
+	/**
+	 * Strips ONLY 'style' attributes WITHIN tags
+	 */
+	public function content_edit_pre( $content, $id )
+	{
+		$style_pattern = '/( style=\"[a-z0-9:;, \-]+\")/i';
 		//On pattern match within post content
 		if ( preg_match_all( $pattern, $content, $matches ) )
 		{
@@ -43,7 +39,7 @@ class GO_Htmlbroom
 			foreach ( $matches[0] as $match )
 			{
 				//Replaces matches with '' or blank space
-				$result = str_replace( $match, '', $content );
+				$content = str_replace( $match, '', $content );
 			}//end foreach
 
 			//Converting HTMLEntities back
@@ -57,7 +53,8 @@ class GO_Htmlbroom
 			);
 			wp_update_post( $my_post );
 		}//end if
-	}//end strip_attribs
+		return $content;
+	}//end content_edit_pre
 }// end class
 
 /**
