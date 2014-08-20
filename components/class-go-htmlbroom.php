@@ -39,13 +39,11 @@ class GO_Htmlbroom
 		//On pattern match within post content
 		if ( preg_match_all( $pattern, $content, $matches ) )
 		{
-			$result = $content;
-
 			//Loops through matches found in post content
 			foreach ( $matches[0] as $match )
 			{
 				//Replaces matches with '' or blank space
-				$result = str_replace( $match, '', $result );
+				$result = str_replace( $match, '', $content );
 			}//end foreach
 
 			//Converting HTMLEntities back
@@ -58,6 +56,7 @@ class GO_Htmlbroom
 				'post_content' => $result,
 			);
 			wp_update_post( $my_post );
+			return $content;
 		}//end if
 	}//end strip_attribs
 }// end class
