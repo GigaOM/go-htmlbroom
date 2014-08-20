@@ -39,15 +39,14 @@ class GO_Htmlbroom
 		//On pattern match within post content
 		if ( preg_match_all( $pattern, $content, $matches ) )
 		{
-			$limit = count( $matches[0] );
 			$result = $content;
 
 			//Loops through matches found in post content
-			for ( $i = 0; $i < $limit; $i++ )
+			foreach ( $matches[0] as $match )
 			{
 				//Replaces matches with '' or blank space
-				$result = str_replace( $matches[ 0 ][ $i ], '', $result );
-			}//end for
+				$result = str_replace( $match, '', $result );
+			}//end foreach
 
 			//Converting HTMLEntities back
 			$result = str_replace( '&lt;', '<', $result );
