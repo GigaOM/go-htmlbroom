@@ -56,7 +56,6 @@ class GO_Htmlbroom
 				'post_content' => $result,
 			);
 			wp_update_post( $my_post );
-			return $content;
 		}//end if
 	}//end strip_attribs
 }// end class
