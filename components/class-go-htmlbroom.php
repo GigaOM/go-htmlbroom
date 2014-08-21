@@ -29,7 +29,7 @@ class GO_Htmlbroom
 	/**
 	 * Strips ONLY 'style' attributes WITHIN tags
 	 */
-	public function content_edit_pre( $content, $id )
+	public function content_edit_pre( $content )
 	{
 		$style_pattern = '/( style=\"[a-z0-9:;, \-]+\")/i';
 		//On pattern match within post content
@@ -41,13 +41,6 @@ class GO_Htmlbroom
 				//Replaces matches with '' or blank space
 				$content = str_replace( $match, '', $content );
 			}//end foreach
-
-			//Updating post content
-			$my_post = array(
-				'ID' => $id,
-				'post_content' => $result,
-			);
-			wp_update_post( $my_post );
 		}//end if
 		return $content;
 	}//end content_edit_pre
