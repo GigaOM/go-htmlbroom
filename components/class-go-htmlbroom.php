@@ -22,8 +22,8 @@ class GO_Htmlbroom
 		unset( $allowedposttags['span'] );
 		add_filter( 'content_save_pre', 'wp_kses_post' );
 
-		//Adds the functions to the correct hooks
-		add_filter( 'content_edit_pre', array( $this, 'content_edit_pre' ), 10, 2 );
+		//Adds the filter to 'content_edit_pre'
+		add_filter( 'content_edit_pre', array( $this, 'content_edit_pre' ), 10, 1 );
 	}//end admin_init
 
 	/**
@@ -35,10 +35,10 @@ class GO_Htmlbroom
 		//On pattern match within post content
 		if ( preg_match_all( $pattern, $content, $matches ) )
 		{
-			//Loops through matches found in post content
+			//Loops through matches found in $content
 			foreach ( $matches[0] as $match )
 			{
-				//Replaces matches with '' or blank space
+				//Replaces matches with ''
 				$content = str_replace( $match, '', $content );
 			}//end foreach
 		}//end if
