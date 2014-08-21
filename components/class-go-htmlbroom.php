@@ -15,35 +15,32 @@ class GO_Htmlbroom
 	 */
 	public function admin_init()
 	{
-		global $allowedposttags;
-
-		//Remove blacklisted tags from allowed list
-		unset( $allowedposttags['div'] );
-		unset( $allowedposttags['span'] );
-		add_filter( 'content_save_pre', 'wp_kses_post' );
-
-		//Adds the filter to 'content_edit_pre'
-		add_filter( 'content_edit_pre', array( $this, 'content_edit_pre' ), 10, 1 );
+		//Adds the filter to 'content_save_pre'
+		add_filter( 'content_save_pre', array( $this, 'content_save_pre' ) );
 	}//end admin_init
 
 	/**
 	 * Strips ONLY 'style' attributes WITHIN tags
 	 */
-	public function content_edit_pre( $content )
+	public function content_save_pre( $content )
 	{
+		global $allowedposttags;
+
+		$original_allowedposttags = $allowedposttags;
+
+		//Remove blacklisted tags from allowed list
+		unset( $allowedposttags['div'] );
+		unset( $allowedposttags['span'] );
+
+		$content = wp_kses_post( $content );
+		$allowedposttags = $original_allowedposttags;
+
+		//Finds all 'style' attributes and replaces them with ''
 		$style_pattern = '/( style=\"[a-z0-9:;, \-]+\")/i';
-		//On pattern match within post content
-		if ( preg_match_all( $pattern, $content, $matches ) )
-		{
-			//Loops through matches found in $content
-			foreach ( $matches[0] as $match )
-			{
-				//Replaces matches with ''
-				$content = str_replace( $match, '', $content );
-			}//end foreach
-		}//end if
+		$content = preg_replace( $style_pattern, '', $content );
+
 		return $content;
-	}//end content_edit_pre
+	}//end content_save_pre
 }// end class
 
 /**
