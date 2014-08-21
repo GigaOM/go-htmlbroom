@@ -42,10 +42,6 @@ class GO_Htmlbroom
 				$content = str_replace( $match, '', $content );
 			}//end foreach
 
-			//Converting HTMLEntities back
-			$result = str_replace( '&lt;', '<', $result );
-			$result = str_replace( '&gt;', '>', $result );
-
 			//Updating post content
 			$my_post = array(
 				'ID' => $id,
