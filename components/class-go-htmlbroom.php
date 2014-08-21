@@ -11,7 +11,7 @@ class GO_Htmlbroom
 	}// end __construct
 
 	/**
-	 * Queues up 'style' stripping
+	 * Queues up 'style' 'div' and 'span' stripping
 	 */
 	public function admin_init()
 	{
@@ -20,19 +20,23 @@ class GO_Htmlbroom
 	}//end admin_init
 
 	/**
-	 * Strips ONLY 'style' attributes WITHIN tags
+	 * Strips 'div' & 'span' tags and 'style' attributes WITHIN tags
 	 */
 	public function content_save_pre( $content )
 	{
 		global $allowedposttags;
 
+		//Saves original list of $allowedposttags
 		$original_allowedposttags = $allowedposttags;
 
 		//Remove blacklisted tags from allowed list
 		unset( $allowedposttags['div'] );
 		unset( $allowedposttags['span'] );
 
+		//Apply kses filter to $content
 		$content = wp_kses_post( $content );
+
+		//Resets $allowedposttags to default AFTER 'div' & 'span' stripping
 		$allowedposttags = $original_allowedposttags;
 
 		//Finds all 'style' attributes and replaces them with ''
