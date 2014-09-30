@@ -36,8 +36,10 @@ class GO_Htmlbroom
 		unset( $allowedposttags['span'] );
 
 		//Loops through $allowedposttags and removes style
-		foreach( $allowedposttags as &$tags ){
-			if( isset( $tags['style'] ) ){
+		foreach( $allowedposttags as &$tags )
+		{
+			if( isset( $tags['style'] ) )
+			{
 				unset( $tags['style'] );
 			}
 		}
