@@ -18,13 +18,8 @@ class GO_Htmlbroom
 		//Adds the filter to 'content_save_pre'
 		add_filter( 'content_save_pre', array( $this, 'content_save_pre' ) );
 
-		add_filter( 'option_use_balanceTags', array( $this, 'option_use_balanceTags' ) );
+		add_filter( 'option_use_balanceTags', '__return_true' );
 	}//end admin_init
-
-	public function option_use_balanceTags( $option )
-	{
-		return TRUE;
-	}
 
 	/**
 	 * Strips 'div' & 'span' tags and 'style' attributes WITHIN tags
