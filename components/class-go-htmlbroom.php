@@ -7,7 +7,7 @@ class GO_Htmlbroom
 	 */
 	public function __construct()
 	{
-		add_action( 'init', array( $this, 'admin_init' ) );
+		add_action( 'admin_init', array( $this, 'admin_init' ) );
 	}// end __construct
 
 	/**
@@ -42,6 +42,7 @@ class GO_Htmlbroom
 		//Finds all 'style' attributes and replaces them with ''
 		$style_pattern = '/( style=\"[a-z0-9:;, \-]+\")/i';
 		$content = preg_replace( $style_pattern, '', $content );
+
 
 		return $content;
 	}//end content_save_pre
