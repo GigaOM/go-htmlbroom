@@ -17,7 +17,14 @@ class GO_Htmlbroom
 	{
 		//Adds the filter to 'content_save_pre'
 		add_filter( 'content_save_pre', array( $this, 'content_save_pre' ) );
+
+		add_filter( 'option_use_balanceTags', array( $this, 'option_use_balanceTags' ) );
 	}//end admin_init
+
+	public function option_use_balanceTags( $option )
+	{
+		return TRUE;
+	}
 
 	/**
 	 * Strips 'div' & 'span' tags and 'style' attributes WITHIN tags
@@ -32,16 +39,16 @@ class GO_Htmlbroom
 		//Remove blacklisted tags from allowed list
 		unset( $allowedposttags['div'] );
 		unset( $allowedposttags['span'] );
-
+		foreach( $allowedposttags as &$tags ){
+			if( isset( $tags['style'] ) ){
+				unset( $tags['style'] );
+			}
+		}
 		//Apply kses filter to $content
 		$content = wp_kses_post( $content );
 
 		//Resets $allowedposttags to default AFTER 'div' & 'span' stripping
 		$allowedposttags = $original_allowedposttags;
-
-		//Finds all 'style' attributes and replaces them with ''
-		$style_pattern = '/( style=\"[a-z0-9:;, \-]+\")/i';
-		$content = preg_replace( $style_pattern, '', $content );
 
 
 		return $content;
