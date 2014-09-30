@@ -39,6 +39,8 @@ class GO_Htmlbroom
 		//Remove blacklisted tags from allowed list
 		unset( $allowedposttags['div'] );
 		unset( $allowedposttags['span'] );
+
+		//Loops through $allowedposttags and removes style
 		foreach( $allowedposttags as &$tags ){
 			if( isset( $tags['style'] ) ){
 				unset( $tags['style'] );
