@@ -20,20 +20,8 @@ class GO_Htmlbroom
 
 		add_filter( 'option_use_balanceTags', '__return_true' );
 
-		add_meta_box( 'go_htmlbroom', 'HTML Filtering', array( $this, 'metabox' ), 'post' );
 	}//end admin_init
 
-	public function metabox()
-	{
-		wp_nonce_field( );
-		echo '<input value="1" type="checkbox" name="post_category[]" id="in-category-1" checked="checked">';
-		_e( 'Filter on', 'metabox' );
-		echo '<lable = "HTML Filtering on">';
-
-		$value = get_post_meta( $post->ID, 'filter_on', true );
-
-
-	}
 
 	/**
 	 * Strips 'div' & 'span' tags and 'style' attributes WITHIN tags
