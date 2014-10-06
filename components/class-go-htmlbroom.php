@@ -8,7 +8,7 @@ class GO_Htmlbroom
 	public function __construct()
 	{
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
-		add_filter( 'tiny_mce_before_init', array( $this, 'tiny_mce_before_init' ), 10, 2 );
+		add_filter( 'tiny_mce_before_init', array( $this, 'tiny_mce_before_init' ) );
 	}// end __construct
 
 	/**
@@ -26,8 +26,10 @@ class GO_Htmlbroom
 
 	/**
 	 * Changes the elements in the TinyMCE init array so we can tweak the TinyMCE UI
+	 *
+	 * @param Array $init Array of TinyMCE init settings
 	 */
-	public function tiny_mce_before_init( $init, $unsued_editor_id )
+	public function tiny_mce_before_init( $init )
 	{
 		$init['block_formats'] = 'Paragraph=p;Pre=pre;Heading 3=h3;Heading 4=h4;Heading 5=h5;Heading 6=h6';
 
