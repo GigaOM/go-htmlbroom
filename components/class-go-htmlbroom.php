@@ -8,6 +8,7 @@ class GO_Htmlbroom
 	public function __construct()
 	{
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
+		add_filter( 'tiny_mce_before_init', array( $this, 'tiny_mce_before_init' ), 10, 2 );
 	}// end __construct
 
 	/**
@@ -22,6 +23,16 @@ class GO_Htmlbroom
 
 	}//end admin_init
 
+
+	/**
+	 * Changes the elements in the TinyMCE init array so we can tweak the TinyMCE UI
+	 */
+	public function tiny_mce_before_init( $init, $unsued_editor_id )
+	{
+		$init['block_formats'] = 'Paragraph=p;Pre=pre;Heading 3=h3;Heading 4=h4;Heading 5=h5;Heading 6=h6';
+
+		return $init;
+	}//end tiny_mce_before_init
 
 	/**
 	 * Strips 'div' & 'span' tags and 'style' attributes WITHIN tags
@@ -51,6 +62,14 @@ class GO_Htmlbroom
 		//Resets $allowedposttags to default AFTER 'div' & 'span' stripping
 		$allowedposttags = $original_allowedposttags;
 
+
+		// Make sure the h tags start at h3. The only h tags that we'll escalate up are h1 & h2 and turn
+		// them into h3
+		if ( preg_match( '!(</?)(h[12])([^>]*>)!im', $content ) )
+		{
+			// Replace the h[12] tags with h3 in the content
+			$content = preg_replace( '!(</?)(h[12])([^>]*>)!im', '$1h3$3', $content );
+		}//end if
 
 		return $content;
 	}//end content_save_pre
