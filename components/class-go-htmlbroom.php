@@ -20,9 +20,7 @@ class GO_Htmlbroom
 		add_filter( 'content_save_pre', array( $this, 'content_save_pre' ) );
 
 		add_filter( 'option_use_balanceTags', '__return_true' );
-
 	}//end admin_init
-
 
 	/**
 	 * Changes the elements in the TinyMCE init array so we can tweak the TinyMCE UI
@@ -31,7 +29,15 @@ class GO_Htmlbroom
 	 */
 	public function tiny_mce_before_init( $init )
 	{
-		$init['block_formats'] = 'Paragraph=p;Pre=pre;Heading 3=h3;Heading 4=h4;Heading 5=h5;Heading 6=h6';
+		if ( empty( $init['block_formats'] ) )
+		{
+			$init['block_formats'] = 'Paragraph=p;Pre=pre;Heading 3=h3;Heading 4=h4;Heading 5=h5;Heading 6=h6';
+		}//end if
+		else
+		{
+			// if block_formats was already set, let's just remove heading 1 and heading 2
+			$init['block_formats'] = preg_replace( '/;[^=]+\=h[12]/', '', $init['block_formats'] );
+		}//end else
 
 		return $init;
 	}//end tiny_mce_before_init
