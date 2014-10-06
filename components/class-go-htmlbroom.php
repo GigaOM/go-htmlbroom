@@ -8,6 +8,7 @@ class GO_Htmlbroom
 	public function __construct()
 	{
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
+		add_filter( 'tiny_mce_before_init', array( $this, 'tiny_mce_before_init' ) );
 	}// end __construct
 
 	/**
@@ -19,9 +20,27 @@ class GO_Htmlbroom
 		add_filter( 'content_save_pre', array( $this, 'content_save_pre' ) );
 
 		add_filter( 'option_use_balanceTags', '__return_true' );
-
 	}//end admin_init
 
+	/**
+	 * Changes the elements in the TinyMCE init array so we can tweak the TinyMCE UI
+	 *
+	 * @param Array $init Array of TinyMCE init settings
+	 */
+	public function tiny_mce_before_init( $init )
+	{
+		if ( empty( $init['block_formats'] ) )
+		{
+			$init['block_formats'] = 'Paragraph=p;Pre=pre;Heading 3=h3;Heading 4=h4;Heading 5=h5;Heading 6=h6';
+		}//end if
+		else
+		{
+			// if block_formats was already set, let's just remove heading 1 and heading 2
+			$init['block_formats'] = preg_replace( '/;[^=]+\=h[12]/', '', $init['block_formats'] );
+		}//end else
+
+		return $init;
+	}//end tiny_mce_before_init
 
 	/**
 	 * Strips 'div' & 'span' tags and 'style' attributes WITHIN tags
@@ -51,6 +70,14 @@ class GO_Htmlbroom
 		//Resets $allowedposttags to default AFTER 'div' & 'span' stripping
 		$allowedposttags = $original_allowedposttags;
 
+
+		// Make sure the h tags start at h3. The only h tags that we'll escalate up are h1 & h2 and turn
+		// them into h3
+		if ( preg_match( '!(</?)(h[12])([^>]*>)!im', $content ) )
+		{
+			// Replace the h[12] tags with h3 in the content
+			$content = preg_replace( '!(</?)(h[12])([^>]*>)!im', '$1h3$3', $content );
+		}//end if
 
 		return $content;
 	}//end content_save_pre
