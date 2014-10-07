@@ -67,9 +67,11 @@ class GO_Htmlbroom
 
 	public function save_data( $post_id )
 	{
-		do_action( 'debug_robot', 'KN: ' . print_r( $_POST, true ) );
+//		do_action( 'debug_robot', 'KN: ' . print_r( $_POST, true ) );
 
 		$disabled = isset( $_POST['htmlbroom-enable'] ) ? FALSE : TRUE;
+
+	do_action( 'debug_robot', 'setting disabled to: ' . $disabled );
 
 		update_post_meta( $post_id, 'go_htmlbroom_disable', $disabled );
 
@@ -78,21 +80,9 @@ class GO_Htmlbroom
 	/**
 	 * Hooked to the save_post action
 	 */
-	public function save_post( $post_id )
+	public function save_post( $post )
 	{
-		// Check that this isn't an autosave
-		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
-		{
-			return;
-		}// end if
 
-		// Don't run on post revisions (almost always happens just before the real post is saved)
-		if ( wp_is_post_revision( $post_id ) )
-		{
-			return;
-		}// end if
-
-		$post = get_post( $post_id );
 		if ( ! is_object( $post ) )
 		{
 			return;
@@ -117,7 +107,7 @@ class GO_Htmlbroom
 			return;
 		}// end if
 
-		$this->save_data( $post_id );
+		$this->save_data( $post->ID );
 	}// end save_post
 
 	/**
@@ -125,15 +115,13 @@ class GO_Htmlbroom
 	 */
 	public function content_save_pre( $content )
 	{
-
 		global $allowedposttags, $post;
+		$this->save_post( $post );
 
-		if (! get_post_meta( $post->ID, 'go_htmlbroom_disable' ) )
+		if ( get_post_meta( $post->ID, 'go_htmlbroom_disable', TRUE ) )
 		{
 			return $content;
 		}
-
-
 
 		//Saves original list of $allowedposttags
 		$original_allowedposttags = $allowedposttags;
