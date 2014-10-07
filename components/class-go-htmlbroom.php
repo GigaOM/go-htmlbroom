@@ -52,7 +52,7 @@ class GO_Htmlbroom
 
 		echo wp_nonce_field( 'go-htmlbroom-save-post', 'go-htmlbroom-save-post' );
 
-		$checked = ! ( get_post_meta( $post_id, 'go_htmlbroom_disable', TRUE ) ) ? FALSE : TRUE;
+		$checked = ! ( get_post_meta( $post_id, 'go_htmlbroom_disable', TRUE ) ) ? TRUE: FALSE;
 
 		?>
 		<div id="display-htmlbroom">
