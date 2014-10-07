@@ -52,7 +52,7 @@ class GO_Htmlbroom
 
 		echo wp_nonce_field( 'go-htmlbroom-save-post', 'go-htmlbroom-save-post' );
 
-		$checked = !( get_post_meta( $post_id, 'go_htmlbroom_disable', TRUE ) ) ? TRUE : FALSE;
+		$checked = ! ( get_post_meta( $post_id, 'go_htmlbroom_disable', TRUE ) ) ? FALSE : TRUE;
 
 		?>
 		<div id="display-htmlbroom">
@@ -99,7 +99,7 @@ class GO_Htmlbroom
 		}// end if
 
 		// check post type matches what you intend
-		$whitelisted_post_types = array( 'post' , 'page' );
+		$whitelisted_post_types = array( 'post', 'page' );
 		if ( ! isset( $post->post_type ) || ! in_array( $post->post_type, $whitelisted_post_types ) )
 		{
 			return;
@@ -112,7 +112,7 @@ class GO_Htmlbroom
 		}// end if
 
 		// Check the permissions
-		if ( ! current_user_can( 'edit_post' , $post->ID  ) )
+		if ( ! current_user_can( 'edit_post', $post->ID ) )
 		{
 			return;
 		}// end if
@@ -128,7 +128,7 @@ class GO_Htmlbroom
 
 		global $allowedposttags, $post;
 
-		if ( get_post_meta( $post->ID, 'go_htmlbroom_disable' ) )
+		if (! get_post_meta( $post->ID, 'go_htmlbroom_disable' ) )
 		{
 			return $content;
 		}
