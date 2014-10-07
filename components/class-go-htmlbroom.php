@@ -71,12 +71,10 @@ class GO_Htmlbroom
 
 		$disabled = isset( $_POST['htmlbroom-enable'] ) ? FALSE : TRUE;
 
-	do_action( 'debug_robot', 'setting disabled to: ' . $disabled );
-
 		update_post_meta( $post_id, 'go_htmlbroom_disable', $disabled );
 
 
-	}
+	}//end save_data
 	/**
 	 * Hooked to the save_post action
 	 */
