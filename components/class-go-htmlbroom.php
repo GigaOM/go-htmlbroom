@@ -45,6 +45,9 @@ class GO_Htmlbroom
 		return $init;
 	}//end tiny_mce_before_init
 
+	/**
+	 * Creates the checkbox
+	 */
 	public function metabox()
 	{
 		global $post;
@@ -52,7 +55,7 @@ class GO_Htmlbroom
 
 		echo wp_nonce_field( 'go-htmlbroom-save-post', 'go-htmlbroom-save-post' );
 
-		$checked = ! ( get_post_meta( $post_id, 'go_htmlbroom_disable', TRUE ) ) ? TRUE: FALSE;
+		$checked = ! get_post_meta( $post_id, 'go_htmlbroom_disable', TRUE )  ? TRUE : FALSE;
 
 		?>
 		<div id="display-htmlbroom">
@@ -65,16 +68,17 @@ class GO_Htmlbroom
 
 	}//end metabox
 
+	/**
+	 * Updates the metabox with the data.
+	 */
 	public function save_data( $post_id )
 	{
-//		do_action( 'debug_robot', 'KN: ' . print_r( $_POST, true ) );
-
 		$disabled = isset( $_POST['htmlbroom-enable'] ) ? FALSE : TRUE;
 
 		update_post_meta( $post_id, 'go_htmlbroom_disable', $disabled );
 
-
 	}//end save_data
+
 	/**
 	 * Hooked to the save_post action
 	 */
@@ -87,7 +91,7 @@ class GO_Htmlbroom
 		}// end if
 
 		// check post type matches what you intend
-		$whitelisted_post_types = array( 'post', 'page' );
+		$whitelisted_post_types = apply_filters( 'go_htmlbroom_post_types', array( 'post', 'page' ) );
 		if ( ! isset( $post->post_type ) || ! in_array( $post->post_type, $whitelisted_post_types ) )
 		{
 			return;
