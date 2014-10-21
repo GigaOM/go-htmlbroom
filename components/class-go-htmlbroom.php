@@ -9,6 +9,7 @@ class GO_Htmlbroom
 	{
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
 		add_filter( 'tiny_mce_before_init', array( $this, 'tiny_mce_before_init' ) );
+		add_action( 'save_post', array( $this, 'save_post' ) );
 	}// end __construct
 
 	/**
@@ -20,6 +21,8 @@ class GO_Htmlbroom
 		add_filter( 'content_save_pre', array( $this, 'content_save_pre' ) );
 
 		add_filter( 'option_use_balanceTags', '__return_true' );
+
+		add_meta_box( 'go_htmlbroom', 'HTML Filtering', array( $this, 'metabox' ), 'post' );
 	}//end admin_init
 
 	/**
@@ -43,11 +46,84 @@ class GO_Htmlbroom
 	}//end tiny_mce_before_init
 
 	/**
+	 * Creates the checkbox
+	 */
+	public function metabox()
+	{
+		global $post;
+		$post_id = $post->ID;
+
+		echo wp_nonce_field( 'go-htmlbroom-save-post', 'go-htmlbroom-save-post' );
+
+		$checked = ! get_post_meta( $post_id, 'go_htmlbroom_disable', TRUE )  ? TRUE : FALSE;
+
+		?>
+		<div id="display-htmlbroom">
+			<p>
+				<input type="checkbox" id="htmlbroom-enable" name="htmlbroom-enable" <?php checked( $checked ); ?> />
+				<label for="htmlbroom-disable">Automatically clean stray HTML typically caused by copy/paste from other apps or sites</label>
+			</p>
+		</div>
+		<?php
+
+	}//end metabox
+
+	/**
+	 * Updates the metabox with the data.
+	 */
+	public function save_data( $post_id )
+	{
+		$disabled = isset( $_POST['htmlbroom-enable'] ) ? FALSE : TRUE;
+
+		update_post_meta( $post_id, 'go_htmlbroom_disable', $disabled );
+
+	}//end save_data
+
+	/**
+	 * Hooked to the save_post action
+	 */
+	public function save_post( $post )
+	{
+
+		if ( ! is_object( $post ) )
+		{
+			return;
+		}// end if
+
+		// check post type matches what you intend
+		$whitelisted_post_types = apply_filters( 'go_htmlbroom_post_types', array( 'post', 'page' ) );
+		if ( ! isset( $post->post_type ) || ! in_array( $post->post_type, $whitelisted_post_types ) )
+		{
+			return;
+		}// end if
+
+		// Check the nonce
+		if ( ! wp_verify_nonce( $_POST['go-htmlbroom-save-post'], 'go-htmlbroom-save-post' ) )
+		{
+			return;
+		}// end if
+
+		// Check the permissions
+		if ( ! current_user_can( 'edit_post', $post->ID ) )
+		{
+			return;
+		}// end if
+
+		$this->save_data( $post->ID );
+	}// end save_post
+
+	/**
 	 * Strips 'div' & 'span' tags and 'style' attributes WITHIN tags
 	 */
 	public function content_save_pre( $content )
 	{
-		global $allowedposttags;
+		global $allowedposttags, $post;
+		$this->save_post( $post );
+
+		if ( get_post_meta( $post->ID, 'go_htmlbroom_disable', TRUE ) )
+		{
+			return $content;
+		}
 
 		//Saves original list of $allowedposttags
 		$original_allowedposttags = $allowedposttags;
