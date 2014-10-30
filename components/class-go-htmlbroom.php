@@ -146,6 +146,8 @@ class GO_Htmlbroom
 		//Resets $allowedposttags to default AFTER 'div' & 'span' stripping
 		$allowedposttags = $original_allowedposttags;
 
+		//Replaces empty p tags
+		$content = str_replace( array( '<p>&nbsp;</p>', '<p></p>' ), '', $content );
 
 		// Make sure the h tags start at h3. The only h tags that we'll escalate up are h1 & h2 and turn
 		// them into h3
